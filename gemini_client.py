@@ -428,10 +428,9 @@ class GeminiClient:
         9. Team Structure / Resources
         10. Risk Assessment / Mitigation
         11. Success Criteria / Acceptance Criteria
-        12. Communication Plan
-        13. Testing Strategy
-        14. Maintenance & Support
-        15. Additional Comments / Notes
+        12. Testing Strategy
+        13. Maintenance & Support
+        14. Additional Comments / Notes
         
         Format your response as a markdown table with these columns:
         | Component | Present (True/False) | Details/Notes |
