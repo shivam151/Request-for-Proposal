@@ -404,3 +404,90 @@ class GeminiClient:
         
         response = self.model.generate_content(prompt)
         return response.text
+    
+    def analysis_proposal(self, proposal_text):
+        """
+        Check the key components that are present in the RFP proposal
+        """
+        prompt = f"""
+        You are a project manager experienced in analyzing RFP (Request for Proposal) documents. 
+        Based on the following proposal text, analyze which key RFP components are present:
+        
+        Proposal Text:
+        {proposal_text}
+        
+        The standard RFP components to check for are:
+        1. Executive Summary / Project Overview
+        2. Scope of Work (In Scope)
+        3. Out of Scope
+        4. Prerequisites / Requirements
+        5. Deliverables
+        6. Timeline / Schedule
+        7. Technology Stack / Technical Requirements
+        8. Budget / Cost Estimation
+        9. Team Structure / Resources
+        10. Risk Assessment / Mitigation
+        11. Success Criteria / Acceptance Criteria
+        12. Communication Plan
+        13. Testing Strategy
+        14. Maintenance & Support
+        15. Additional Comments / Notes
+        
+        Format your response as a markdown table with these columns:
+        | Component | Present (True/False) | Details/Notes |
+        
+        For each component, indicate whether it's present in the proposal and provide brief details if found.
+        """
+        
+        response = self.model.generate_content(prompt)
+        return response.text
+        
+    def analysis_proposal_summary(self, analysis_proposal_text):
+        """
+        Generate a comprehensive summary of the RFP proposal analysis
+        """
+        prompt = f"""
+        You are a senior project manager with extensive experience in RFP evaluation and proposal analysis. 
+        Based on the following RFP analysis results, create a comprehensive executive summary:
+        
+        Analysis Results:
+        {analysis_proposal_text}
+        
+        Please provide a detailed 2-3 page executive summary that includes:
+        
+        1. **Executive Overview**
+        - High-level assessment of the proposal completeness
+        - Overall recommendation (Approved/Needs Revision/Rejected)
+        
+        2. **Component Analysis Summary**
+        - Which critical components are present
+        - Which components are missing or incomplete
+        - Quality assessment of present components
+        
+        3. **Strengths and Opportunities**
+        - Key strengths identified in the proposal
+        - Areas that need improvement or clarification
+        - Missing elements that should be addressed
+        
+        4. **Risk Assessment**
+        - Potential risks based on missing components
+        - Impact of incomplete sections on project success
+        
+        5. **Recommendations**
+        - Specific actions required before approval
+        - Suggested improvements or additions
+        - Next steps in the evaluation process
+        
+        6. **Conclusion**
+        - Final assessment and decision rationale
+        - Timeline for resubmission if needed
+        
+        Format the response in well-structured markdown with clear headings, bullet points where appropriate, 
+        and professional language suitable for stakeholder presentation.
+        
+        Aim for approximately 2-3 pages of detailed analysis (1500-2000 words).
+        """
+        
+        response = self.model.generate_content(prompt)
+        return response.text
+      
