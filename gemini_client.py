@@ -900,10 +900,137 @@ class GeminiClient:
         response = self.model.generate_content(prompt)
         return response.text
     
-    def analysis_proposal(self, proposal_text):
+    # def analysis_proposal(self, proposal_text,  extracomponent ):
+    #     """
+    #     Check the key components that are present in the RFP proposal
+    #     """
+    #     prompt = f"""
+    #     You are a project manager experienced in analyzing RFP (Request for Proposal) documents. 
+    #     Based on the following proposal text, analyze which key RFP components are present:
+        
+    #     Proposal Text:
+    #     {proposal_text}
+        
+    #     The standard RFP components to check for are:
+    #     1. Executive Summary / Project Overview
+    #     2. Scope of Work (In Scope)
+    #     3. Out of Scope
+    #     4. Prerequisites / Requirements
+    #     5. Deliverables
+    #     6. Timeline / Schedule
+    #     7. Technology Stack / Technical Requirements
+    #     8. Budget / Cost Estimation
+    #     9. Team Structure / Resources
+    #     10. Risk Assessment / Mitigation
+    #     11. Success Criteria / Acceptance Criteria
+    #     12. Testing Strategy
+    #     13. Maintenance & Support
+    #     14. Additional Comments / Notes
+        
+    #     Format your response as a markdown table with these columns:
+    #     | Component | Present (True/False) | Details/Notes |
+        
+    #     For each component, indicate whether it's present in the proposal and provide brief details if found.
+    #     """
+        
+    #     response = self.model.generate_content(prompt)
+    #     return response.text
+        
+    # def analysis_proposal(self, proposal_text, extracomponent):
+    #     """
+    #     Check the key components that are present in the RFP proposal
+    #     """
+    #     standard_components = [
+    #         "1. Executive Summary / Project Overview",
+    #         "2. Scope of Work (In Scope)",
+    #         "3. Out of Scope",
+    #         "4. Prerequisites / Requirements",
+    #         "5. Deliverables",
+    #         "6. Timeline / Schedule",
+    #         "7. Technology Stack / Technical Requirements",
+    #         "8. Budget / Cost Estimation",
+    #         "9. Team Structure / Resources",
+    #         "10. Risk Assessment / Mitigation",
+    #         "11. Success Criteria / Acceptance Criteria",
+    #         "12. Testing Strategy",
+    #         "13. Maintenance & Support",
+    #         "14. Additional Comments / Notes"
+    #     ]
+        
+    #     # Add extra components if provided
+    #     components_to_check = standard_components.copy()
+    #     if extracomponent:
+    #         if isinstance(extracomponent, list):
+    #             for i, component in enumerate(extracomponent, start=15):
+    #                 components_to_check.append(f"{i}. {component}")
+    #         else:
+    #             components_to_check.append(f"15. {extracomponent}")
+        
+    #     components_list = "\n        ".join(components_to_check)
+        
+    #     prompt = f"""
+    #     You are a project manager experienced in analyzing RFP (Request for Proposal) documents. 
+    #     Based on the following proposal text, analyze which key RFP components are present:
+        
+    #     Proposal Text:
+    #     {proposal_text}
+        
+    #     The RFP components to check for are:
+    #     {components_list}
+        
+    #     Format your response as a markdown table with these columns:
+    #     | Component | Present (True/False) | Details/Notes |
+        
+    #     For each component, indicate whether it's present in the proposal and provide brief details if found.
+    #     """
+        
+    #     response = self.model.generate_content(prompt)
+    #     return response.text
+    
+    def analysis_proposal(self, proposal_text, extra_components=None):
         """
         Check the key components that are present in the RFP proposal
+        
+        Args:
+            proposal_text (str): The RFP proposal text to analyze
+            extra_components (str or list, optional): Additional components to check for
+        
+        Returns:
+            str: Analysis results in markdown table format
         """
+        standard_components = [
+            "1. Executive Summary / Project Overview",
+            "2. Scope of Work (In Scope)",
+            "3. Out of Scope",
+            "4. Prerequisites / Requirements",
+            "5. Deliverables",
+            "6. Timeline / Schedule",
+            "7. Technology Stack / Technical Requirements",
+            "8. Budget / Cost Estimation",
+            "9. Team Structure / Resources",
+            "10. Risk Assessment / Mitigation",
+            "11. Success Criteria / Acceptance Criteria",
+            "12. Testing Strategy",
+            "13. Maintenance & Support",
+            "14. Additional Comments / Notes"
+        ]
+        
+        # Create copy of standard components
+        components_to_check = standard_components.copy()
+        
+        # Handle extra components
+        if extra_components:
+            next_number = len(standard_components) + 1
+            
+            if isinstance(extra_components, str):
+                components_to_check.append(f"{next_number}. {extra_components}")
+            elif isinstance(extra_components, list):
+                for component in extra_components:
+                    components_to_check.append(f"{next_number}. {component}")
+                    next_number += 1
+        
+        components_list = "\n        ".join(components_to_check)
+        
         prompt = f"""
         You are a project manager experienced in analyzing RFP (Request for Proposal) documents. 
         Based on the following proposal text, analyze which key RFP components are present:
@@ -911,22 +1038,8 @@ class GeminiClient:
         Proposal Text:
         {proposal_text}
         
-        The standard RFP components to check for are:
-        1. Executive Summary / Project Overview
-        2. Scope of Work (In Scope)
-        3. Out of Scope
-        4. Prerequisites / Requirements
-        5. Deliverables
-        6. Timeline / Schedule
-        7. Technology Stack / Technical Requirements
-        8. Budget / Cost Estimation
-        9. Team Structure / Resources
-        10. Risk Assessment / Mitigation
-        11. Success Criteria / Acceptance Criteria
-        12. Communication Plan
-        13. Testing Strategy
-        14. Maintenance & Support
-        15. Additional Comments / Notes
+        The RFP components to check for are:
+        {components_list}
         
         Format your response as a markdown table with these columns:
         | Component | Present (True/False) | Details/Notes |
@@ -936,7 +1049,7 @@ class GeminiClient:
         
         response = self.model.generate_content(prompt)
         return response.text
-        
+
     def analysis_proposal_summary(self, analysis_proposal_text):
         """
         Generate a comprehensive summary of the RFP proposal analysis
