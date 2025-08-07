@@ -372,7 +372,7 @@ st.markdown('<div class="main-header"><h1> Project Management Tool</h1><p>Intell
 col1, col2, col3 = st.columns([4, 1, 1])
 with col3:
     if st.session_state.mode == "with_proposal":
-        if st.button("🚀 Create Proposal", key="create_proposal_btn", help="Switch to proposal creation mode"):
+        if st.button("Create Proposal", key="create_proposal_btn", help="Switch to proposal creation mode"):
             st.session_state.mode = "create_proposal"
             st.session_state.create_proposal_initialized = True
             reset_process()
@@ -386,6 +386,7 @@ with col3:
 # Main content based on mode
 if st.session_state.mode == "with_proposal":
     with st.sidebar:
+        st.image("./images/yashphoto.PNG", width=200)  
         st.title("Proposal Analysis Progress")
         
         # Progress steps for proposal analysis

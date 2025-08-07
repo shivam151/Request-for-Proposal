@@ -473,7 +473,7 @@ class GeminiClient:
         
         Args:
             proposal_text: The main proposal content to be used for overall assessment
-            analysis_proposal_text: Detailed component analysis to be used for the Component Analysis Summary
+            analysis_proposal_text: Detailed component analysis to be used for the Component Analysis Summary 
         
         Returns:
             str: A comprehensive executive summary in markdown format
@@ -496,10 +496,12 @@ class GeminiClient:
         - Summary of key findings from the proposal content
         
         2. **Component Analysis Summary**
-        - Critical components present in the proposal (from the detailed component analysis)
+        - Critical components present in the proposal
         - Components that are missing or incomplete
         - Quality assessment of present components
         - Specific findings from the component analysis
+        - Component | Present (True/False) if true ✅ else ❌  | Details/Notes | PageNumber
+        - Table Format 
         
         3. **Strengths and Opportunities**
         - Key strengths identified in both the overall proposal and component analysis
