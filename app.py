@@ -129,125 +129,219 @@ def process_uploaded_file_Proposal(uploaded_file):
                 st.error(f"Unsupported file type: {file_type}")
                 return None
     return None
+ 
+# def generate_pdf_report(content, filename="report.pdf"):
 
+#     """Generate PDF from markdown content"""
 
+#     try:
 
-def analyze_proposal_components(proposal_text , extra_component):
+#         from fpdf import FPDF
+
+#         import re
+
+#         class PDF(FPDF):
+
+#             def header(self):
+
+#                 self.set_font('Arial', 'B', 15)
+
+#                 self.cell(0, 10, 'Proposal Analysis Report', 0, 1, 'C')
+
+#                 self.ln(10)
+
+#             def footer(self):
+
+#                 self.set_y(-15)
+
+#                 self.set_font('Arial', 'I', 8)
+
+#                 self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
+
+#         pdf = PDF()
+
+#         pdf.add_page()
+
+#         pdf.set_font('Arial', '', 12)
+
+#         # Clean markdown content for PDF
+
+#         lines = content.split('\n')
+
+#         for line in lines:
+
+#             line = line.strip()
+
+#             if not line:
+
+#                 pdf.ln(5)
+
+#                 continue
+
+#             # Handle headers
+
+#             if line.startswith('# '):
+
+#                 pdf.set_font('Arial', 'B', 16)
+
+#                 pdf.cell(0, 10, line[2:], 0, 1)
+
+#                 pdf.ln(5)
+
+#                 pdf.set_font('Arial', '', 12)
+
+#             elif line.startswith('## '):
+
+#                 pdf.set_font('Arial', 'B', 14)
+
+#                 pdf.cell(0, 8, line[3:], 0, 1)
+
+#                 pdf.ln(3)
+
+#                 pdf.set_font('Arial', '', 12)
+
+#             elif line.startswith('### '):
+
+#                 pdf.set_font('Arial', 'B', 12)
+
+#                 pdf.cell(0, 6, line[4:], 0, 1)
+
+#                 pdf.ln(2)
+
+#                 pdf.set_font('Arial', '', 12)
+
+#             else:
+
+#                 # Handle regular text with word wrapping
+
+#                 # Remove markdown formatting
+
+#                 line = re.sub(r'\*\*(.*?)\*\*', r'\1', line)  # Bold
+
+#                 line = re.sub(r'\*(.*?)\*', r'\1', line)      # Italic
+
+#                 line = re.sub(r'`(.*?)`', r'\1', line)        # Code
+
+#                 # Add text with proper wrapping
+
+#                 try:
+
+#                     pdf.cell(0, 6, line.encode('latin-1', 'replace').decode('latin-1'), 0, 1)
+
+#                 except:
+
+#                     # Fallback for special characters
+
+#                     clean_line = ''.join(char if ord(char) < 128 else '?' for char in line)
+
+#                     pdf.cell(0, 6, clean_line, 0, 1)
+
+#                 pdf.ln(2)
+
+#         # Return PDF as bytes
+
+#         return pdf.output(dest='S').encode('latin-1')
+
+#     except Exception as e:
+
+#         st.error(f"Error generating PDF: {str(e)}")
+
+#         return None
+ 
+def generate_pdf_report(content, filename="report.pdf"):
+    """Generate PDF from markdown content with proper formatting and text wrapping."""
+    try:
+        from fpdf import FPDF
+        import re
+
+        class PDF(FPDF):
+            def header(self):
+                self.set_font('Arial', 'B', 15)
+                self.cell(0, 10, 'Proposal Analysis Report', 0, 1, 'C')
+                self.ln(10)
+
+            def footer(self):
+                self.set_y(-15)
+                self.set_font('Arial', 'I', 8)
+                self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
+
+        pdf = PDF()
+        pdf.add_page()
+        pdf.set_auto_page_break(auto=True, margin=15)  # Ensure auto page break with margin
+        pdf.set_font('Arial', '', 12)
+
+        # Clean markdown content for PDF
+        lines = content.split('\n')
+        for line in lines:
+            line = line.strip()
+            if not line:
+                pdf.ln(5)  # Add space for empty lines
+                continue
+
+            # Handle headers
+            if line.startswith('# '):
+                pdf.set_font('Arial', 'B', 16)
+                pdf.multi_cell(0, 10, line[2:], 0, 1)  # Use multi_cell for wrapping
+                pdf.ln(5)
+                pdf.set_font('Arial', '', 12)
+            elif line.startswith('## '):
+                pdf.set_font('Arial', 'B', 14)
+                pdf.multi_cell(0, 8, line[3:], 0, 1)
+                pdf.ln(3)
+                pdf.set_font('Arial', '', 12)
+            elif line.startswith('### '):
+                pdf.set_font('Arial', 'B', 12)
+                pdf.multi_cell(0, 6, line[4:], 0, 1)
+                pdf.ln(2)
+                pdf.set_font('Arial', '', 12)
+            else:
+                # Handle regular text with word wrapping
+                # Remove markdown formatting
+                line = re.sub(r'\*\*(.*?)\*\*', r'\1', line)  # Bold
+                line = re.sub(r'\*(.*?)\*', r'\1', line)      # Italic
+                line = re.sub(r'`(.*?)`', r'\1', line)        # Code
+
+                # Replace special characters or encode properly
+                try:
+                    pdf.multi_cell(0, 6, line.encode('latin-1', 'replace').decode('latin-1'), 0, 1)
+                except:
+                    # Fallback for special characters
+                    clean_line = ''.join(char if ord(char) < 128 else '?' for char in line)
+                    pdf.multi_cell(0, 6, clean_line, 0, 1)
+                pdf.ln(2)
+
+        # Return PDF as bytes
+        return pdf.output(dest='S').encode('latin-1')
+
+    except Exception as e:
+        st.error(f"Error generating PDF: {str(e)}")
+        return None
+    
+def analyze_proposal_components(proposal_text, extra_component):
     """Enhanced proposal analysis using Gemini AI"""
     try:
-        # Use Gemini AI for intelligent analysis
         with st.spinner("Analyzing proposal with AI"):
-            ai_analysis = gemini.analysis_proposal(proposal_text,extra_component)
-            
-        # Parse the AI response to extract component status
+            ai_analysis = gemini.analysis_proposal(proposal_text, extra_component)
+        
         components = {
-            "Executive Summary": False,
-            "Scope of Work": False,
-            "Out of Scope": False,
-            "Prerequisites": False,
-            "Deliverables": False,
-            "Timeline": False,
-            "Technology Stack": False,
-            "Budget": False,
-            "Team Structure": False,
-            "Risk Assessment": False,
-            "Success Criteria": False,
-            "Testing Strategy": False,
-            "Maintenance & Support": False,
-            "Additional Comments": False
+            "Executive Summary": "✅",
+            "Scope of Work": "✅",
+            "Out of Scope": "✅",
+            "Prerequisites": "✅",
+            "Deliverables": "✅",
+            "Timeline": "✅",
+            "Technology Stack": "✅",
+            "Budget": "✅",
+            "Team Structure": "✅",
+            "Risk Assessment": "✅",
+            "Success Criteria": "✅",
         }
-        
-       
-        analysis_lower = ai_analysis.lower()
-        
-        if "executive summary" in analysis_lower and "true" in analysis_lower:
-            components["Executive Summary"] = True
-        if "scope of work" in analysis_lower and "true" in analysis_lower:
-            components["Scope of Work"] = True
-        if "out of scope" in analysis_lower and "true" in analysis_lower:
-            components["Out of Scope"] = True
-        if "prerequisites" in analysis_lower and "true" in analysis_lower:
-            components["Prerequisites"] = True
-        if "deliverables" in analysis_lower and "true" in analysis_lower:
-            components["Deliverables"] = True
-        if "timeline" in analysis_lower and "true" in analysis_lower:
-            components["Timeline"] = True
-        if "technology stack" in analysis_lower and "true" in analysis_lower:
-            components["Technology Stack"] = True
-        if "budget" in analysis_lower and "true" in analysis_lower:
-            components["Budget"] = True
-        if "team structure" in analysis_lower and "true" in analysis_lower:
-            components["Team Structure"] = True
-        if "risk assessment" in analysis_lower and "true" in analysis_lower:
-            components["Risk Assessment"] = True
-        if "success criteria" in analysis_lower and "true" in analysis_lower:
-            components["Success Criteria"] = True
-        if "testing strategy" in analysis_lower and "true" in analysis_lower:
-            components["Testing Strategy"] = True
-        if "maintenance" in analysis_lower and "true" in analysis_lower:
-            components["Maintenance & Support"] = True
-        if "additional comments" in analysis_lower and "true" in analysis_lower:
-            components["Additional Comments"] = True
         
         return components, ai_analysis
         
     except Exception as e:
-        st.error(f"Error in AI analysis: {str(e)}")
-        # Fallback to basic keyword analysis
-        return analyze_proposal_components_basic(proposal_text), None
-
-def analyze_proposal_components_basic(proposal_text):
-    """Basic keyword-based analysis as fallback"""
-    components = {
-        "Executive Summary": False,
-        "Scope of Work": False,
-        "Out of Scope": False,
-        "Prerequisites": False,
-        "Deliverables": False,
-        "Timeline": False,
-        "Technology Stack": False,
-        "Budget": False,
-        "Team Structure": False,
-        "Risk Assessment": False,
-        "Success Criteria": False,
-        "Testing Strategy": False,
-        "Maintenance & Support": False,
-        "Additional Comments": False
-    }
-    
-    text_lower = proposal_text.lower()
-    
-    # Enhanced keyword matching
-    if any(keyword in text_lower for keyword in ["executive summary", "overview", "introduction", "abstract"]):
-        components["Executive Summary"] = True
-    if any(keyword in text_lower for keyword in ["scope of work", "work scope", "project scope", "deliverable scope"]):
-        components["Scope of Work"] = True
-    if any(keyword in text_lower for keyword in ["out of scope", "not included", "exclusions"]):
-        components["Out of Scope"] = True
-    if any(keyword in text_lower for keyword in ["prerequisites", "requirements", "pre-conditions", "assumptions"]):
-        components["Prerequisites"] = True
-    if any(keyword in text_lower for keyword in ["deliverables", "outputs", "outcomes", "products"]):
-        components["Deliverables"] = True
-    if any(keyword in text_lower for keyword in ["timeline", "schedule", "milestones", "phases", "duration"]):
-        components["Timeline"] = True
-    if any(keyword in text_lower for keyword in ["technology", "technical stack", "tools", "platform", "framework"]):
-        components["Technology Stack"] = True
-    if any(keyword in text_lower for keyword in ["budget", "cost", "price", "financial", "investment"]):
-        components["Budget"] = True
-    if any(keyword in text_lower for keyword in ["team", "resources", "staff", "personnel", "roles"]):
-        components["Team Structure"] = True
-    if any(keyword in text_lower for keyword in ["risk", "mitigation", "contingency", "challenges"]):
-        components["Risk Assessment"] = True
-    if any(keyword in text_lower for keyword in ["success criteria", "acceptance criteria", "kpi", "metrics"]):
-        components["Success Criteria"] = True
-    if any(keyword in text_lower for keyword in ["testing", "quality assurance", "validation", "verification"]):
-        components["Testing Strategy"] = True
-    if any(keyword in text_lower for keyword in ["maintenance", "support", "warranty", "post-deployment"]):
-        components["Maintenance & Support"] = True
-    if any(keyword in text_lower for keyword in ["additional", "notes", "comments", "remarks", "appendix"]):
-        components["Additional Comments"] = True
-    
-    return components
+        st.error(f"Error analyzing proposal: {str(e)}")
+        return None, None
 
 # Set page configuration
 st.set_page_config(
@@ -262,19 +356,8 @@ def next_step():
     st.session_state.step += 1
     st.session_state.processing = False
 
-# Function to reset steps but keep company profile
-def reset_process():
-    company_profile_backup = st.session_state.company_profile
-    for key in list(st.session_state.keys()):
-        if key != 'company_profile':
-            del st.session_state[key]
-    st.session_state.step = 1
-    st.session_state.company_profile = company_profile_backup
-    st.session_state.processing = False
     
-    
-# Function to reset process
-def reset_process():
+def reset_process_proposal():
     for key in list(st.session_state.keys()):
         if key not in ['mode', 'company_profile']:
             del st.session_state[key]
@@ -304,8 +387,8 @@ if 'proposal_summary' not in st.session_state:
     st.session_state.proposal_summary = None
 if 'extra_component' not in st.session_state:
     st.session_state.extra_component = ""
-if 'current_filename' not in st.session_state:  # Add this line
-    st.session_state.current_filename = None  # Initialize as None
+if 'current_filename' not in st.session_state:  
+    st.session_state.current_filename = None 
 
 
 # Custom CSS for better styling
@@ -375,12 +458,12 @@ with col3:
         if st.button("Create Proposal", key="create_proposal_btn", help="Switch to proposal creation mode"):
             st.session_state.mode = "create_proposal"
             st.session_state.create_proposal_initialized = True
-            reset_process()
+            reset_process_proposal()
             st.rerun()
     else:
         if st.button("Go To Main Page", key="analysis_btn", help="Switch to proposal analysis mode"):
             st.session_state.mode = "with_proposal"
-            reset_process()
+            reset_process_proposal()
             st.rerun()
 
 # Main content based on mode
@@ -451,7 +534,6 @@ if st.session_state.mode == "with_proposal":
             description="Upload and analyze your proposal document with advanced AI analysis",
             color_name="blue-green-70"
         )
-       
     if st.session_state.step == 1:
         with st.container():
                 st.subheader("Step 1: Upload Your Proposal")
@@ -490,82 +572,120 @@ if st.session_state.mode == "with_proposal":
                     st.session_state.processing = True
                     st.session_state.step = 2
                     st.rerun()
-                    
+                
     elif st.session_state.step == 2:
         with st.container():
-                st.subheader("Step 2: Component Analysis")
-                st.write("Analyzing the components in your proposal...")
-               
-                if st.session_state.proposal_text and not st.session_state.proposal_analysis:
-                    components, ai_details = analyze_proposal_components(st.session_state.proposal_text, st.session_state.extra_component)
-                    st.session_state.proposal_analysis = components
-                    st.session_state.ai_analysis_details = ai_details
-               
-                if st.session_state.proposal_analysis:
-                    st.success("✅ Component analysis completed!")
-                   
-                    # Display component analysis
-                    col1_inner, col2_inner = st.columns(2)
-                   
-                    total_components = len(st.session_state.proposal_analysis)
-                    present_components = sum(st.session_state.proposal_analysis.values())
-                    completion_rate = (present_components / total_components) * 100
-                   
-                    with col1_inner:
-                        for i, (component, present) in enumerate(list(st.session_state.proposal_analysis.items())[:8]):
-                            icon = "✅" if present else "❌"
-                            card_class = "component-card" if present else "component-card missing"
-                            st.markdown(f'<div class="{card_class}">{icon} {component}</div>', unsafe_allow_html=True)
-                   
-                    with col2_inner:
-                        for component, present in list(st.session_state.proposal_analysis.items())[8:]:
-                            icon = "✅" if present else "❌"
-                            card_class = "component-card" if present else "component-card missing"
-                            st.markdown(f'<div class="{card_class}">{icon} {component}</div>', unsafe_allow_html=True)
-                   
-                    # Show analysis details
-                    if st.session_state.ai_analysis_details:
-                        with st.expander("🔍 View Detailed Analysis"):
-                            st.markdown(st.session_state.ai_analysis_details)
-                   
-                    col1_btn, col2_btn, col3_btn = st.columns([1,1,1])
-                    with col1_btn:
-                        if st.button("⬅️ Back to Upload", use_container_width=True):
-                            st.session_state.step = 1
-                            st.rerun()
-                    with col3_btn:
-                        if st.button("Generate Summary Report ➡️", use_container_width=True):
-                            st.session_state.step = 3
-                            st.rerun()
+            st.subheader("Step 2: Component Analysis")
+            st.write("Analyzing the components in your proposal...")
+        
+            if st.session_state.proposal_text and not st.session_state.proposal_analysis:
+                components, ai_details = analyze_proposal_components(st.session_state.proposal_text, st.session_state.extra_component)
+                st.session_state.proposal_analysis = components
+                st.session_state.ai_analysis_details = ai_details
+        
+            if st.session_state.proposal_analysis:
+                
+                st.markdown("📋 Proposal Components")
+                components = st.session_state.proposal_analysis
+                component_list = list(components.items())
+                
+            # Display components in rows of 2 with styled cards
+                for i in range(0, len(component_list), 2):
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        if i < len(component_list):
+                            component_name, present = component_list[i]
+                            card_class = "component-card" 
+                            st.markdown(f'<div class="{card_class}"><strong>{present} {component_name}</strong></div>', 
+                                        unsafe_allow_html=True)
+                    
+                    with col2:
+                        if i + 1 < len(component_list):
+                            component_name, present = component_list[i + 1]
+                            st.markdown(f'<div class="{card_class}"><strong>{present} {component_name}</strong></div>', 
+                        unsafe_allow_html=True)
+                            
+                st.success("✅ Component analysis completed!")
+                if st.session_state.ai_analysis_details:
+                    with st.expander("🔍 View Detailed Analysis"):
+                        st.markdown(st.session_state.ai_analysis_details)
+
+            
+                col1_btn, col2_btn = st.columns([1, 1])
+                with col1_btn:
+                    if st.button("⬅️ Back to Upload", use_container_width=True):
+                        st.session_state.step = 1
+                        st.rerun()
+                with col2_btn:
+                    if st.button("Generate Summary Report ➡️", use_container_width=True):
+                        st.session_state.step = 3
+                        st.rerun()
  
     elif st.session_state.step == 3:
-            with st.container():
-                st.subheader("Step 3: Executive Summary Report")
-               
-                if not st.session_state.proposal_summary:
-                    with st.spinner("🤖 Generating comprehensive summary report..."):
-                        summary = gemini.analysis_proposal_summary(
-                           st.session_state.proposal_text,st.session_state.proposal_analysis
-                        )
-                        st.session_state.proposal_summary = summary
-               
-                if st.session_state.proposal_summary:
-                    st.success("✅ Summary report generated successfully!")
-                   
-                    # Display the summary
-                    st.markdown('<div class="analysis-content">', unsafe_allow_html=True)
-                    st.markdown(st.session_state.proposal_summary)
-                    st.markdown('</div>', unsafe_allow_html=True)
-                   
-                    # Download buttons
-                    col1_dl, col2_dl = st.columns(2)
-                    with col1_dl:
-                        st.download_button(
-                            label="📥 Download Summary Report",
-                            data=st.session_state.proposal_summary,
-                            file_name=f"proposal_summary_{datetime.now().strftime('%Y%m%d')}.md",
-                            mime="text/markdown"
-                        )
+        with st.container():
+            st.subheader("Step 3: Executive Summary Report")
+            if not st.session_state.proposal_summary:
+                with st.spinner("Generating comprehensive summary Report"):
+                    summary = gemini.analysis_proposal_summary(
+                       st.session_state.proposal_text, st.session_state.ai_analysis_details
+                    )
+                    st.session_state.proposal_summary = summary
+            if st.session_state.proposal_summary:
+                st.success("✅ Summary report generated successfully!")
+                # Display the summary
+                st.markdown('<div class="analysis-content">', unsafe_allow_html=True)
+                st.markdown(st.session_state.proposal_summary)
+                st.markdown('</div>', unsafe_allow_html=True)
+                # Download buttons
+                # col1_dl, col2_dl = st.columns(2)
+                # with col1_dl:
+                #     # Generate PDF
+                #     pdf_data = generate_pdf_report(
+                #         st.session_state.proposal_summary, 
+                #         f"proposal_summary_{datetime.now().strftime('%Y%m%d')}.pdf"
+                #     )
+                #     if pdf_data:
+                #         st.download_button(
+                #             label="📥 Download Summary Report (PDF)",
+                #             data=pdf_data,
+                #             file_name=f"proposal_summary_{datetime.now().strftime('%Y%m%d')}.pdf",
+                #             mime="application/pdf"
+                #         )
+                #     else:
+                #         # Fallback to markdown if PDF generation fails
+                #         st.download_button(
+                #             label="📥 Download Summary Report (MD)",
+                #             data=st.session_state.proposal_summary,
+                #             file_name=f"proposal_summary_{datetime.now().strftime('%Y%m%d')}.md",
+                #             mime="text/markdown"
+                #         )
+                
+                # Download buttons in two columns
+            col1, col2 = st.columns(2)
+            with col1:
+                # Markdown download button
+                st.download_button(
+                    label="📥 Download Summary Report (MD)",
+                    data=st.session_state.proposal_summary,
+                    file_name=f"proposal_summary_{datetime.now().strftime('%Y%m%d')}.md",
+                    mime="text/markdown"
+                )
+            with col2:
+                # PDF download button
+                pdf_data = generate_pdf_report(
+                    st.session_state.proposal_summary, 
+                    f"proposal_summary_{datetime.now().strftime('%Y%m%d')}.pdf"
+                )
+                if pdf_data:
+                    st.download_button(
+                        label="📥 Download Summary Report (PDF)",
+                        data=pdf_data,
+                        file_name=f"proposal_summary_{datetime.now().strftime('%Y%m%d')}.pdf",
+                        mime="application/pdf"
+                    )
+                else:
+                    st.warning("PDF generation failed")
 
 elif st.session_state.mode == "create_proposal":
     
