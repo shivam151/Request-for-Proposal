@@ -405,72 +405,9 @@ class GeminiClient:
         response = self.model.generate_content(prompt)
         return response.text
 
-    # def analysis_proposal(self, proposal_text, extra_components=None):
-    #     """
-    #     Check the key components that are present in the RFP proposal
-        
-    #     Args:
-    #         proposal_text (str): The RFP proposal text to analyze
-    #         extra_components (str or list, optional): Additional components to check for
-        
-    #     Returns:
-    #         str: Analysis results in markdown table format
-    #     """
-    #     standard_components = [
-    #         "1. Executive Summary / Project Overview",
-    #         "2. Scope of Work (In Scope)",
-    #         "3. Out of Scope",
-    #         "4. Prerequisites / Requirements",
-    #         "5. Deliverables",
-    #         "6. Timeline / Schedule",
-    #         "7. Technology Stack / Technical Requirements",
-    #         "8. Budget / Cost Estimation",
-    #         "9. Team Structure / Resources",
-    #         "10. Risk Assessment / Mitigation",
-    #         "11. Success Criteria / Acceptance Criteria",
-    #         "12. Testing Strategy",
-    #         "13. Maintenance & Support",
-    #         "14. Additional Comments / Notes"
-    #     ]
-        
-    #     # Create copy of standard components
-    #     components_to_check = standard_components.copy()
-        
-    #     # Handle extra components
-    #     if extra_components:
-    #         next_number = len(standard_components) + 1
-            
-    #         if isinstance(extra_components, str):
-    #             components_to_check.append(f"{next_number}. {extra_components}")
-    #         elif isinstance(extra_components, list):
-    #             for component in extra_components:
-    #                 components_to_check.append(f"{next_number}. {component}")
-    #                 next_number += 1
-        
-    #     components_list = "\n  ".join(components_to_check)
-        
-    #     prompt = f"""
-    #     You are a project manager experienced in analyzing RFP (Request for Proposal) documents. 
-    #     Based on the following proposal text, analyze which key RFP components are present:
-        
-    #     Proposal Text:
-    #     {proposal_text}
-        
-    #     The RFP components to check for are:
-    #     {components_list}
-        
-    #     Format your response as a markdown table with these columns:
-    #     | Component | Present (True/False) if true ✅ else ❌  | Details/Notes | PageNumber
-        
-    #     For each component, indicate whether it's present in the proposal and provide brief details if found.
-    #     """       
-    #     response = self.model.generate_content(prompt)
-    #     return response.text
-
-
     def analysis_proposal(self, proposal_text, extra_components=None):
         """
-        Check the key components that are present in the RFP proposal.
+        Check the key components that are present in the RFP proposal
         
         Args:
             proposal_text (str): The RFP proposal text to analyze
@@ -510,7 +447,7 @@ class GeminiClient:
                     components_to_check.append(f"{next_number}. {component}")
                     next_number += 1
         
-        components_list = "\n".join(f"  - {component}" for component in components_to_check)
+        components_list = "\n  ".join(components_to_check)
         
         prompt = f"""
         You are a project manager experienced in analyzing RFP (Request for Proposal) documents. 
@@ -523,84 +460,84 @@ class GeminiClient:
         {components_list}
         
         Format your response as a markdown table with these columns:
-        | Component | Present | Details/Notes | Page Number |
-        |-----------|---------|---------------|-----------------|
-        [For each component, mark ✅ if present or ❌ if missing, and provide brief details if found]
+        | Component | Present (True/False) if true ✅ else ❌  | Details/Notes | PageNumber
+        
+        For each component, indicate whether it's present in the proposal and provide brief details if found.
         """       
         response = self.model.generate_content(prompt)
         return response.text
 
 
-    # def analysis_proposal_summary(self, proposal_text, analysis_proposal_text):
+    # def analysis_proposal(self, proposal_text, extra_components=None):
     #     """
-    #     Generate a comprehensive summary of the RFP proposal analysis
+    #     Check the key components that are present in the RFP proposal.
         
     #     Args:
-    #         proposal_text: The main proposal content to be used for overall assessment
-    #         analysis_proposal_text: Detailed component analysis to be used for the Component Analysis Summary 
+    #         proposal_text (str): The RFP proposal text to analyze
+    #         extra_components (str or list, optional): Additional components to check for
         
     #     Returns:
-    #         str: A comprehensive executive summary in markdown format
+    #         str: Analysis results in markdown table format
     #     """
-    #     prompt = f"""
-    #     You are a senior project manager with extensive experience in RFP evaluation and proposal analysis. 
-    #     Based on the following RFP analysis results, create a comprehensive executive summary:
+    #     standard_components = [
+    #         "1. Executive Summary / Project Overview",
+    #         "2. Scope of Work (In Scope)",
+    #         "3. Out of Scope",
+    #         "4. Prerequisites / Requirements",
+    #         "5. Deliverables",
+    #         "6. Timeline / Schedule",
+    #         "7. Technology Stack / Technical Requirements",
+    #         "8. Budget / Cost Estimation",
+    #         "9. Team Structure / Resources",
+    #         "10. Risk Assessment / Mitigation",
+    #         "11. Success Criteria / Acceptance Criteria",
+    #         "12. Testing Strategy",
+    #         "13. Maintenance & Support",
+    #         "14. Additional Comments / Notes"
+    #     ]
         
-    #     **Proposal Content for Overall Assessment:**
+    #     # Create copy of standard components
+    #     components_to_check = standard_components.copy()
+        
+    #     # Handle extra components
+    #     if extra_components:
+    #         next_number = len(standard_components) + 1
+            
+    #         if isinstance(extra_components, str):
+    #             components_to_check.append(f"{next_number}. {extra_components}")
+    #         elif isinstance(extra_components, list):
+    #             for component in extra_components:
+    #                 components_to_check.append(f"{next_number}. {component}")
+    #                 next_number += 1
+        
+    #     components_list = "\n".join(f"  - {component}" for component in components_to_check)
+        
+    #     prompt = f"""
+    #     You are a project manager experienced in analyzing RFP (Request for Proposal) documents. 
+    #     Based on the following proposal text, analyze which key RFP components are present:
+        
+    #     Proposal Text:
     #     {proposal_text}
         
-    #     **Detailed Component Analysis:**
-    #     {analysis_proposal_text}
+    #     The RFP components to check for are:
+    #     {components_list}
         
-    #     Please provide a detailed 2-3 page executive summary that includes:
-        
-    #     1. **Executive Overview**
-    #     - High-level assessment of the proposal completeness based on the overall content
-    #     - Overall recommendation (Approved/Needs Revision/Rejected)
-    #     - Summary of key findings from the proposal content
-        
-    #     2. **Component Analysis Summary**
-    #     - Critical components present in the proposal
-    #     - Components that are missing or incomplete
-    #     - Quality assessment of present components
-    #     - Specific findings from the component analysis
-    #     - Component | Present (True/False) if true ✅ else ❌  | Details/Notes | PageNumber
-    #     - Table Format 
-        
-    #     3. **Strengths and Opportunities**
-    #     - Key strengths identified in both the overall proposal and component analysis
-    #     - Areas that need improvement or clarification
-    #     - Missing elements that should be addressed
-        
-    #     4. **Risk Assessment**
-    #     - Potential risks based on missing components or proposal weaknesses
-    #     - Impact of incomplete sections on project success
-        
-    #     5. **Recommendations**
-    #     - Specific actions required before approval
-    #     - Suggested improvements or additions
-    #     - Next steps in the evaluation process
-        
-    #     6. **Conclusion**
-    #     - Final assessment and decision rationale combining insights from both analyses
-    #     - Timeline for resubmission if needed
-        
-    #     Format the response in well-structured markdown with clear headings, bullet points where appropriate, 
-    #     and professional language suitable for stakeholder presentation.
-        
-    #     Aim for approximately 2-3 pages of detailed analysis (1500-2000 words).
-    #     """
-        
+    #     Format your response as a markdown table with these columns:
+    #     | Component | Present | Details/Notes | Page Number |
+    #     |-----------|---------|---------------|-----------------|
+    #     [For each component, mark ✅ if present or ❌ if missing, and provide brief details if found]
+    #     """       
     #     response = self.model.generate_content(prompt)
     #     return response.text
 
+
     def analysis_proposal_summary(self, proposal_text, analysis_proposal_text):
         """
-        Generate a comprehensive summary of the RFP proposal analysis.
+        Generate a comprehensive summary of the RFP proposal analysis
         
         Args:
-            proposal_text (str): The main proposal content to be used for overall assessment
-            analysis_proposal_text (str): Detailed component analysis to be used for the Component Analysis Summary 
+            proposal_text: The main proposal content to be used for overall assessment
+            analysis_proposal_text: Detailed component analysis to be used for the Component Analysis Summary 
         
         Returns:
             str: A comprehensive executive summary in markdown format
@@ -608,61 +545,124 @@ class GeminiClient:
         prompt = f"""
         You are a senior project manager with extensive experience in RFP evaluation and proposal analysis. 
         Based on the following RFP analysis results, create a comprehensive executive summary:
-
-        # RFP Proposal Analysis Summary
-
-        ## 1. Executive Overview
-        - **High-level assessment**: Provide a brief evaluation of the proposal's overall completeness and quality
-        - **Recommendation**: [Approved/Needs Revision/Rejected] with justification
-        - **Key findings**: Highlight 3-5 most important observations from the proposal content
-
-        ## 2. Component Analysis
-        Summarize the detailed component analysis with focus on:
-        - **Critical components present**: List the most important components that are well-covered
-        - **Missing/incomplete components**: Identify gaps that need addressing
-        - **Quality assessment**: Evaluate the thoroughness of each major section
-
-        ### Component Analysis Table
-        (Include the detailed component analysis table here in markdown format)
-        {analysis_proposal_text}
-
-        ## 3. Strengths and Opportunities
-        ### Strengths:
-        - List 3-5 notable strengths of the proposal
-        - Highlight particularly strong sections
-
-        ### Improvement Opportunities:
-        - Identify 3-5 key areas needing improvement
-        - Note missing elements that should be addressed
-
-        ## 4. Risk Assessment
-        - **Key risks**: Identify potential project risks based on analysis
-        - **Impact analysis**: Evaluate how missing/incomplete sections might affect project success
-        - **Mitigation suggestions**: Propose ways to address identified risks
-
-        ## 5. Recommendations
-        - **Required actions**: Specific changes needed before approval
-        - **Improvement suggestions**: Detailed recommendations for enhancement
-        - **Next steps**: Clear action items for the evaluation process
-
-        ## 6. Conclusion
-        - **Final assessment**: Summary of overall evaluation
-        - **Decision rationale**: Clear justification for the recommendation
-        - **Timeline**: If revision is needed, specify deadlines for resubmission
-
-        **Proposal Content Reference**:
+        
+        **Proposal Content for Overall Assessment:**
         {proposal_text}
-
-        **Formatting Notes**:
-        - Use clear markdown headings and subheadings
-        - Employ bullet points for lists and key points
-        - Maintain professional, concise language
-        - Target length: 2-3 pages (1500-2000 words)
-        - Ensure logical flow between sections
+        
+        **Detailed Component Analysis:**
+        {analysis_proposal_text}
+        
+        Please provide a detailed 2-3 page executive summary that includes:
+        
+        1. **Executive Overview**
+        - High-level assessment of the proposal completeness based on the overall content
+        - Overall recommendation (Approved/Needs Revision/Rejected)
+        - Summary of key findings from the proposal content
+        
+        2. **Component Analysis Summary**
+        - Critical components present in the proposal
+        - Components that are missing or incomplete
+        - Quality assessment of present components
+        - Specific findings from the component analysis
+        - Component | Present (True/False) if true ✅ else ❌  | Details/Notes | PageNumber
+        - Table Format 
+        
+        3. **Strengths and Opportunities**
+        - Key strengths identified in both the overall proposal and component analysis
+        - Areas that need improvement or clarification
+        - Missing elements that should be addressed
+        
+        4. **Risk Assessment**
+        - Potential risks based on missing components or proposal weaknesses
+        - Impact of incomplete sections on project success
+        
+        5. **Recommendations**
+        - Specific actions required before approval
+        - Suggested improvements or additions
+        - Next steps in the evaluation process
+        
+        6. **Conclusion**
+        - Final assessment and decision rationale combining insights from both analyses
+        - Timeline for resubmission if needed
+        
+        Format the response in well-structured markdown with clear headings, bullet points where appropriate, 
+        and professional language suitable for stakeholder presentation.
+        
+        Aim for approximately 2-3 pages of detailed analysis (1500-2000 words).
         """
         
         response = self.model.generate_content(prompt)
         return response.text
+
+    # def analysis_proposal_summary(self, proposal_text, analysis_proposal_text):
+    #     """
+    #     Generate a comprehensive summary of the RFP proposal analysis.
+        
+    #     Args:
+    #         proposal_text (str): The main proposal content to be used for overall assessment
+    #         analysis_proposal_text (str): Detailed component analysis to be used for the Component Analysis Summary 
+        
+    #     Returns:
+    #         str: A comprehensive executive summary in markdown format
+    #     """
+    #     prompt = f"""
+    #     You are a senior project manager with extensive experience in RFP evaluation and proposal analysis. 
+    #     Based on the following RFP analysis results, create a comprehensive executive summary:
+
+    #     # RFP Proposal Analysis Summary
+
+    #     ## 1. Executive Overview
+    #     - **High-level assessment**: Provide a brief evaluation of the proposal's overall completeness and quality
+    #     - **Recommendation**: [Approved/Needs Revision/Rejected] with justification
+    #     - **Key findings**: Highlight 3-5 most important observations from the proposal content
+
+    #     ## 2. Component Analysis
+    #     Summarize the detailed component analysis with focus on:
+    #     - **Critical components present**: List the most important components that are well-covered
+    #     - **Missing/incomplete components**: Identify gaps that need addressing
+    #     - **Quality assessment**: Evaluate the thoroughness of each major section
+
+    #     ### Component Analysis Table
+    #     (Include the detailed component analysis table here in markdown format)
+    #     {analysis_proposal_text}
+
+    #     ## 3. Strengths and Opportunities
+    #     ### Strengths:
+    #     - List 3-5 notable strengths of the proposal
+    #     - Highlight particularly strong sections
+
+    #     ### Improvement Opportunities:
+    #     - Identify 3-5 key areas needing improvement
+    #     - Note missing elements that should be addressed
+
+    #     ## 4. Risk Assessment
+    #     - **Key risks**: Identify potential project risks based on analysis
+    #     - **Impact analysis**: Evaluate how missing/incomplete sections might affect project success
+    #     - **Mitigation suggestions**: Propose ways to address identified risks
+
+    #     ## 5. Recommendations
+    #     - **Required actions**: Specific changes needed before approval
+    #     - **Improvement suggestions**: Detailed recommendations for enhancement
+    #     - **Next steps**: Clear action items for the evaluation process
+
+    #     ## 6. Conclusion
+    #     - **Final assessment**: Summary of overall evaluation
+    #     - **Decision rationale**: Clear justification for the recommendation
+    #     - **Timeline**: If revision is needed, specify deadlines for resubmission
+
+    #     **Proposal Content Reference**:
+    #     {proposal_text}
+
+    #     **Formatting Notes**:
+    #     - Use clear markdown headings and subheadings
+    #     - Employ bullet points for lists and key points
+    #     - Maintain professional, concise language
+    #     - Target length: 2-3 pages (1500-2000 words)
+    #     - Ensure logical flow between sections
+    #     """
+        
+    #     response = self.model.generate_content(prompt)
+    #     return response.text
 
 
     def extract_text_from_docx_proposal(self, docx_file):
