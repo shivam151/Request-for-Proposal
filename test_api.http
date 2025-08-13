@@ -1,0 +1,42 @@
+# FastAPI Test Requests
+@baseUrl = http://localhost:8000
+
+### Test root endpoint
+GET {{baseUrl}}/
+
+### Test component analysis
+POST {{baseUrl}}/analyze/components
+Content-Type: application/json
+
+{
+    "proposal_text": "This is a sample proposal with executive summary, scope of work, deliverables, timeline, budget, and team structure.",
+    "extra_components": "Risk Management"
+}
+
+### Test file upload
+POST {{baseUrl}}/upload/proposal
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+
+------WebKitFormBoundary
+Content-Disposition: form-data; name="file"; filename="proposal.pdf"
+Content-Type: application/pdf
+
+# (Binary file content would go here)
+------WebKitFormBoundary--
+
+### Test RFP analysis
+POST {{baseUrl}}/rfp/analyze
+Content-Type: application/json
+
+{
+    "rfp_text": "Request for Proposal: We need a software development project for inventory management system...",
+    "company_profile": "Tech company with 10 years experience in software development..."
+}
+
+### Test pricing analysis
+POST {{baseUrl}}/analyze/pricing
+Content-Type: application/json
+
+{
+    "proposal_text": "Project budget: $100,000. Development: $70,000, Testing: $20,000, Documentation: $10,000"
+}
